@@ -1,102 +1,350 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dia da Morte</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 0 20px;
-      background: #f9f9f9;
-      color: #333;
-      text-align: center;
-    }
-    h1 {
-      color: #cc0000;
-    }
-    input, button {
-      padding: 10px;
-      margin: 8px 0;
-      width: 80%;
-      max-width: 300px;
-      font-size: 16px;
-    }
-    button {
-      background: #cc0000;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    #resultado {
-      margin-top: 30px;
-      font-size: 18px;
-      line-height: 1.5;
-      background: #fff3f3;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #cc0000;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Descubra seu Dia da Morte</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel&display=swap');
+
+  /* Reset */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+
+  body, html {
+    height: 100%;
+    background: #000;
+    color: #eee;
+    font-family: 'Cinzel', serif;
+    overflow-x: hidden;
+  }
+
+  /* Fundo galhos usando SVG como background */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://i.ibb.co/DWxYnpd/dark-branches.svg') no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: -2;
+  }
+
+  /* Canvas sombra para leve animação */
+  #backgroundCanvas {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  main {
+    max-width: 480px;
+    margin: 80px auto 40px;
+    background: rgba(0,0,0,0.7);
+    padding: 30px 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px 5px #88000088;
+    position: relative;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #f44336;
+    text-shadow: 0 0 10px #f44336bb;
+    user-select: none;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  input[type="text"],
+  input[type="tel"] {
+    font-size: 1.3rem;
+    padding: 14px 18px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: #111;
+    color: #eee;
+    box-shadow: 0 0 10px #880000aa inset;
+    transition: box-shadow 0.3s ease;
+  }
+  input[type="text"]:focus,
+  input[type="tel"]:focus {
+    box-shadow: 0 0 15px #f44336;
+  }
+
+  button {
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    background: #f44336;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 15px #f44336;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background: #c63030;
+  }
+
+  #resultado {
+    margin-top: 36px;
+    background: rgba(244,67,54,0.1);
+    padding: 28px 26px;
+    border-radius: 14px;
+    border: 2px solid #f44336;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    color: #f0d6d6;
+  }
+
+  /* Ceifador na lateral direita */
+  #ceifador {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 150px;
+    opacity: 0.8;
+    user-select: none;
+    pointer-events: none;
+    z-index: 10;
+    filter: drop-shadow(0 0 3px #f44336);
+  }
+
+  /* Botão de som */
+  #soundToggle {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: #f44336;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #f44336;
+    color: white;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    user-select: none;
+  }
+  #soundToggle:hover {
+    background: #c63030;
+  }
+</style>
 </head>
 <body>
-  <h1>Descubra o dia e hora que você vai morrer</h1>
-  <form id="formMorte">
-    <input type="text" id="nome" placeholder="Seu nome" required /><br />
-    <input type="date" id="nascimento" placeholder="Data de nascimento" required /><br />
+
+<canvas id="backgroundCanvas"></canvas>
+
+<!-- Botão de ligar/desligar som -->
+<button id="soundToggle" title="Ligar/Desligar Som">&#128266;</button>
+
+<main>
+  <h1>Descubra seu Dia da Morte</h1>
+  <form id="formMorte" autocomplete="off" spellcheck="false" novalidate>
+    <input
+      type="text"
+      id="nome"
+      name="nome"
+      placeholder="Seu nome"
+      maxlength="30"
+      autocomplete="off"
+      required
+      pattern="^[a-zA-ZÀ-ú\s]+$"
+      title="Digite apenas letras e espaços"
+    />
+
+    <input
+      type="tel"
+      id="nascimento"
+      name="nascimento"
+      placeholder="Data de nascimento (dd/mm/aaaa)"
+      maxlength="10"
+      inputmode="numeric"
+      required
+      pattern="^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$"
+      title="Formato: dd/mm/aaaa"
+    />
+
     <button type="submit">Descobrir meu dia da morte</button>
   </form>
 
   <div id="resultado" style="display:none;"></div>
+</main>
 
-  <script>
-    function calcularIdade(dataNasc) {
-      const hoje = new Date();
-      const nasc = new Date(dataNasc);
-      let idade = hoje.getFullYear() - nasc.getFullYear();
-      const m = hoje.getMonth() - nasc.getMonth();
-      if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
-        idade--;
-      }
-      return idade;
+<!-- Ceifador PNG transparente no canto -->
+<img id="ceifador" src="https://i.ibb.co/YRBX4xK/reaper-foice.png" alt="Ceifador com Foice" draggable="false" />
+
+<script>
+  // Fundo animado simples - quadradinhos que se movem suavemente
+  const canvas = document.getElementById('backgroundCanvas');
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  const squares = [];
+  const numSquares = 50;
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  class Square {
+    constructor() {
+      this.reset();
     }
-
-    function gerarDataMorte(dataNasc) {
-      const idadeAtual = calcularIdade(dataNasc);
-      const anosVida = idadeAtual + Math.floor(Math.random() * 60) + 1;
-      const nasc = new Date(dataNasc);
-      const anoMorte = nasc.getFullYear() + anosVida;
-      const mesMorte = Math.floor(Math.random() * 12);
-      const diaMorte = Math.floor(Math.random() * 28) + 1;
-      const horaMorte = Math.floor(Math.random() * 24);
-      const minutoMorte = Math.floor(Math.random() * 60);
-      return new Date(anoMorte, mesMorte, diaMorte, horaMorte, minutoMorte);
+    reset() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.size = 10 + Math.random() * 15;
+      this.speedX = (Math.random() - 0.5) * 0.15;
+      this.speedY = (Math.random() - 0.5) * 0.15;
+      this.alpha = 0.03 + Math.random() * 0.04;
     }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
 
-    document.getElementById('formMorte').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const nome = document.getElementById('nome').value.trim();
-      const nascimento = document.getElementById('nascimento').value;
-      if (!nome || !nascimento) return;
+      if(this.x < -this.size) this.x = width + this.size;
+      else if(this.x > width + this.size) this.x = -this.size;
 
-      const dataMorte = gerarDataMorte(nascimento);
-      const opcoesCausas = [
-        "Você terá um acidente de trânsito fatal enquanto volta do trabalho.",
-        "Você terá uma parada cardíaca inesperada.",
-        "Você terá uma doença silenciosa que não perceberá até ser tarde.",
-        "Você sofrerá uma queda grave em casa.",
-        "Você terá um acidente simples no trabalho que será fatal."
-      ];
-      const causa = opcoesCausas[Math.floor(Math.random() * opcoesCausas.length)];
+      if(this.y < -this.size) this.y = height + this.size;
+      else if(this.y > height + this.size) this.y = -this.size;
+    }
+    draw() {
+      ctx.fillStyle = `rgba(244, 67, 54, ${this.alpha})`;
+      ctx.fillRect(this.x, this.y, this.size, this.size);
+    }
+  }
 
-      const textoResultado = `${nome}, seu fim acontecerá exatamente assim:<br><br>${causa}<br><br>Data da morte: <b>${dataMorte.toLocaleDateString('pt-BR')}</b><br>Hora exata: <b>${dataMorte.getHours().toString().padStart(2, '0')}:${dataMorte.getMinutes().toString().padStart(2, '0')}</b>`;
+  for(let i=0; i<numSquares; i++) {
+    squares.push(new Square());
+  }
 
-      const resultadoDiv = document.getElementById('resultado');
-      resultadoDiv.innerHTML = textoResultado;
-      resultadoDiv.style.display = 'block';
+  function animate() {
+    ctx.clearRect(0,0,width,height);
+    squares.forEach(sq => {
+      sq.update();
+      sq.draw();
     });
-  </script>
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Máscara simples para dd/mm/aaaa no input de nascimento
+  const nascimentoInput = document.getElementById('nascimento');
+  nascimentoInput.addEventListener('input', e => {
+    let v = nascimentoInput.value;
+    v = v.replace(/\D/g, '').slice(0,8);
+    if (v.length >= 5) {
+      v = v.replace(/^(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3');
+    } else if (v.length >= 3) {
+      v = v.replace(/^(\d{2})(\d{0,2}).*/, '$1/$2');
+    }
+    nascimentoInput.value = v;
+  });
+
+  // Função para calcular idade atual baseada na data de nascimento (dd/mm/aaaa)
+  function calcularIdade(dataStr) {
+    const [dia, mes, ano] = dataStr.split('/').map(Number);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - ano;
+    if (hoje.getMonth() + 1 < mes || (hoje.getMonth() + 1 === mes && hoje.getDate() < dia)) {
+      idade--;
+    }
+    return idade;
+  }
+
+  // Função para gerar data da morte e outros dados
+  function gerarDataMorte(dataStr) {
+    const idadeAtual = calcularIdade(dataStr);
+    const [diaNasc, mesNasc, anoNasc] = dataStr.split('/').map(Number);
+    const anosVida = idadeAtual + Math.floor(Math.random() * 60) + 1;
+    const anoMorte = anoNasc + anosVida;
+    const mesMorte = Math.floor(Math.random() * 12) + 1;
+    const diaMorte = Math.floor(Math.random() * 28) + 1;
+    const horaMorte = Math.floor(Math.random() * 24);
+    const minutoMorte = Math.floor(Math.random() * 60);
+
+    const cidades = ['Jaguaribe', 'Jaguaribara', 'Limoeiro', 'Itaissaba', 'Aracati', 'Morada Nova'];
+    const cidadeSorteada = cidades[Math.floor(Math.random() * cidades.length)];
+
+    return {
+      dataFormatada: `${String(diaMorte).padStart(2,'0')}/${String(mesMorte).padStart(2,'0')}/${anoMorte}`,
+      horaFormatada: `${String(horaMorte).padStart(2,'0')}:${String(minutoMorte).padStart(2,'0')}`,
+      idadeMorte: anosVida,
+      anoMorte,
+      cidade: cidadeSorteada
+    };
+  }
+
+  // Causas de morte simples e realistas
+  const causas = [
+    "Você terá uma parada cardíaca inesperada.",
+    "Você sofrerá um acidente grave ao voltar para casa.",
+    "Você será vítima de uma doença silenciosa e fatal.",
+    "Você terá uma queda fatal dentro de casa.",
+    "Você não resistirá a um acidente no trabalho."
+  ];
+
+  // Evento de submit do formulário
+  document.getElementById('formMorte').addEventListener('submit', e => {
+    e.preventDefault();
+    const nome = document.getElementById('nome').value.trim();
+    const nascimento = document.getElementById('nascimento').value;
+
+    if(!nome || !nascimento) return alert('Por favor, preencha todos os campos corretamente.');
+
+    const dataMorte = gerarDataMorte(nascimento);
+    const causa = causas[Math.floor(Math.random() * causas.length)];
+
+    const textoResultado = `${nome}, seu fim acontecerá exatamente assim:\n\n${causa}\n\nData da morte: ${dataMorte.dataFormatada}\nHora exata: ${dataMorte.horaFormatada}\nIdade ao morrer: ${dataMorte.idadeMorte} anos\nAno da morte: ${dataMorte.anoMorte}\nCidade da morte: ${dataMorte.cidade}`;
+
+    const resultadoDiv = document.getElementById('resultado');
+    resultadoDiv.textContent = textoResultado;
+    resultadoDiv.style.display = 'block';
+  });
+
+  // Som de suspense (loop)
+  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/08/23/audio_8b4e11512f.mp3?filename=dark-mystery-ambient-11008.mp3');
+  audio.loop = true;
+  audio.volume = 0.15;
+
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = false;
+
+  soundToggle.addEventListener('click', () => {
+    if(soundOn){
+      audio.pause();
+      soundToggle.innerHTML = '&#128263;'; // Ícone som off
+      soundOn = false;
+    } else {
+      audio.play();
+      soundToggle.innerHTML = '&#128266;'; // Ícone som on
+      soundOn = true;
+    }
+  });
+</script>
+
 </body>
 </html>
