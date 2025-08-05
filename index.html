@@ -12,7 +12,7 @@
   }
   body, html {
     height: 100%;
-    background: #000 url('https://i.imgur.com/Zb6U87y.png') no-repeat center center fixed;
+    background: #000 url('https://img.freepik.com/fotos-premium/arvore-preta-seca-sem-folhas-com-ceu-vermelho-sangue-assustador-fundo-de-natureza-de-arvore-de-horror-assustador-para-o-halloween_696486-50.jpg') no-repeat center center fixed;
     background-size: cover;
     color: #eee;
     font-family: 'Playfair Display', serif;
@@ -109,6 +109,9 @@
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
   }
+  input[type="date"]::placeholder {
+    color: #eee;
+  }
   /* Imagem da morte no topo e resultado */
   #grim-reaper {
     width: 110px;
@@ -149,7 +152,7 @@
 <div id="app" class="fade-slide">
   <!-- Tela Inicial -->
   <div id="screen-start" class="screen">
-    <img id="grim-reaper" src="https://i.imgur.com/llOqHnL.png" alt="Figura da Morte com foice" />
+    <img id="grim-reaper" src="https://segredosdomundo.r7.com/wp-content/uploads/2021/12/10-anjos-da-morte-mais-conhecidos-na-biblia-e-na-mitologia-e1639504697683.jpg" alt="Figura da Morte com foice" />
     <h1>Descubra o Dia da Sua Morte</h1>
     <p style="text-align:center; font-size:1.1rem; margin-bottom:25px; color:#ff6666; text-shadow:0 0 8px #ff0000;">
       Será que você sabe quando vai morrer? Responda as perguntas e descubra seu destino final...
@@ -165,7 +168,7 @@
   </div>
   <!-- Resultado -->
   <div id="screen-result" class="screen" style="display:none;">
-    <img id="grim-reaper-result" src="https://i.imgur.com/llOqHnL.png" alt="Figura da Morte com foice" style="width: 130px; display:block; margin: 0 auto 30px auto; filter: drop-shadow(0 0 12px #bb0000);" />
+    <img id="grim-reaper-result" src="https://segredosdomundo.r7.com/wp-content/uploads/2021/12/10-anjos-da-morte-mais-conhecidos-na-biblia-e-na-mitologia-e1639504697683.jpg" alt="Figura da Morte com foice" style="width: 130px; display:block; margin: 0 auto 30px auto; filter: drop-shadow(0 0 12px #bb0000);" />
     <h2>Seu Fim Está Marcado</h2>
     <p id="result-text"></p>
   </div>
@@ -207,8 +210,9 @@
     {
       text: "Qual sua data de nascimento?",
       answers: null,
-      inputType: "date",
-      inputId: "birthDateInput"
+      inputType: "text",
+      inputId: "birthDateInput",
+      inputPlaceholder: "Digite sua data de nascimento aqui (dd/mm/aaaa)"
     }
   ];
 
@@ -218,158 +222,174 @@
     "infarto fulminante",
     "derrame cerebral",
     "complicações de uma doença crônica",
-    "queda grave em casa",
-    "ataque de apneia súbita",
-    "choque anafilático",
+    "queda grave",
+    "insuficiência respiratória",
     "envenenamento acidental",
-    "susto extremo com parada cardíaca"
+    "ataque de apneia durante o sono"
   ];
 
-  const cities = ["Jaguaribe", "Jaguaribara", "Limoeiro", "Itaiçaba", "Aracati", "Morada Nova"];
-
-  const startBtn = document.getElementById('start-btn');
+  let currentQuestion = 0;
+  let userData = {};
+  const app = document.getElementById('app');
   const screenStart = document.getElementById('screen-start');
   const screenQuestions = document.getElementById('screen-questions');
   const screenResult = document.getElementById('screen-result');
   const questionText = document.getElementById('question-text');
-  const answersDiv = document.getElementById('answers');
+  const answersContainer = document.getElementById('answers');
   const resultText = document.getElementById('result-text');
 
-  let currentQuestionIndex = 0;
-  let userResponses = {};
-  let userName = '';
-  let userBirthDate = null;
+  const grimReaperStart = document.getElementById('grim-reaper');
+  const grimReaperResult = document.getElementById('grim-reaper-result');
 
-  // Função para formatar data para dd/mm/yyyy
-  function formatDateBR(date) {
-    const d = new Date(date);
-    let day = d.getDate();
-    let month = d.getMonth() + 1;
-    const year = d.getFullYear();
-    if(day < 10) day = '0'+day;
-    if(month < 10) month = '0'+month;
-    return `${day}/${month}/${year}`;
+  // Função para formatar a data dd/mm/aaaa com barras automáticas
+  function formatDateInput(value) {
+    let v = value.replace(/\D/g, '');
+    if (v.length > 2 && v.length <= 4) v = v.slice(0,2) + '/' + v.slice(2);
+    else if (v.length > 4) v = v.slice(0,2) + '/' + v.slice(2,4) + '/' + v.slice(4,8);
+    return v;
   }
 
-  function calculateDeathDay(birthDate) {
-    const baseAge = Math.floor(60 + Math.random() * 30); // Morrer entre 60 e 90 anos
-    const birth = new Date(birthDate);
-    const deathYear = birth.getFullYear() + baseAge;
-    const deathMonth = Math.floor(Math.random() * 12);
-    const deathDay = Math.floor(Math.random() * 28) + 1; // Para evitar problemas com meses menores
-    return new Date(deathYear, deathMonth, deathDay);
-  }
-
-  function renderQuestion() {
-    questionText.textContent = questions[currentQuestionIndex].text;
-    answersDiv.innerHTML = '';
-
-    if(questions[currentQuestionIndex].answers) {
-      // Mostrar botões com respostas
-      const ans = questions[currentQuestionIndex].answers;
-      ans.forEach((answer, i) => {
+  // Mostra pergunta atual
+  function showQuestion(index) {
+    const q = questions[index];
+    questionText.textContent = q.text;
+    answersContainer.innerHTML = '';
+    if (q.answers) {
+      q.answers.forEach(ans => {
         const btn = document.createElement('button');
-        btn.textContent = answer;
-        btn.style.textAlign = i === 0 ? 'left' : (i === ans.length-1 ? 'right' : 'center');
-        btn.addEventListener('click', () => {
-          userResponses[questions[currentQuestionIndex].text] = answer;
+        btn.textContent = ans;
+        btn.onclick = () => {
+          userData[q.text] = ans;
           nextQuestion();
-        });
-        answersDiv.appendChild(btn);
+        };
+        answersContainer.appendChild(btn);
       });
-    } else if(questions[currentQuestionIndex].inputType === "text") {
+      // Espaçamento dos botões: 3 botões -> espaço uniforme, 2 botões -> meio e direita
+      if (q.answers.length === 3) {
+        answersContainer.style.justifyContent = 'space-between';
+      } else {
+        answersContainer.style.justifyContent = 'flex-start';
+        // Ajusta espaçamento se só 2 botões
+        if (answersContainer.children.length === 2) {
+          answersContainer.children[0].style.marginRight = '10px';
+        }
+      }
+    } else if (q.inputType === 'text') {
       const input = document.createElement('input');
-      input.type = "text";
-      input.id = questions[currentQuestionIndex].inputId;
-      input.placeholder = questions[currentQuestionIndex].inputPlaceholder;
-      input.autocomplete = "off";
-      input.required = true;
-      answersDiv.appendChild(input);
-
-      const btn = document.createElement('button');
-      btn.textContent = "Próximo";
-      btn.style.flexBasis = "100%";
-      btn.addEventListener('click', () => {
-        const val = input.value.trim();
-        if(val === '') {
-          alert('Por favor, preencha seu nome para continuar.');
+      input.type = 'text';
+      input.id = q.inputId;
+      input.placeholder = q.inputPlaceholder;
+      input.autocomplete = 'off';
+      if(q.inputId === "birthDateInput"){
+        input.inputMode = "numeric";
+        input.maxLength = 10;
+        input.oninput = e => {
+          e.target.value = formatDateInput(e.target.value);
+        }
+      }
+      answersContainer.appendChild(input);
+      const btnNext = document.createElement('button');
+      btnNext.textContent = "Próximo";
+      btnNext.onclick = () => {
+        const val = document.getElementById(q.inputId).value.trim();
+        if(val.length === 0){
+          alert("Por favor, preencha o campo.");
           return;
         }
-        userName = val;
-        userResponses[questions[currentQuestionIndex].text] = val;
+        if(q.inputId === "birthDateInput" && !/^\d{2}\/\d{2}\/\d{4}$/.test(val)){
+          alert("Digite a data no formato dd/mm/aaaa.");
+          return;
+        }
+        if(q.inputId === "nameInput" && val.length < 2){
+          alert("Digite um nome válido.");
+          return;
+        }
+        userData[q.text] = val;
         nextQuestion();
-      });
-      answersDiv.appendChild(btn);
-      input.focus();
-    } else if(questions[currentQuestionIndex].inputType === "date") {
-      const input = document.createElement('input');
-      input.type = "date";
-      input.id = questions[currentQuestionIndex].inputId;
-      input.max = new Date().toISOString().split("T")[0]; // Data máxima hoje
-      answersDiv.appendChild(input);
-
-      const btn = document.createElement('button');
-      btn.textContent = "Descubra o dia da sua morte";
-      btn.style.flexBasis = "100%";
-      btn.addEventListener('click', () => {
-        const val = input.value;
-        if(!val) {
-          alert('Por favor, informe sua data de nascimento para continuar.');
-          return;
-        }
-        userBirthDate = val;
-        userResponses[questions[currentQuestionIndex].text] = val;
-        showResult();
-      });
-      answersDiv.appendChild(btn);
-      input.focus();
+      };
+      answersContainer.appendChild(btnNext);
+      // Centraliza input e botão
+      input.style.marginBottom = '15px';
+      btnNext.style.width = '100%';
     }
   }
 
+  // Próxima pergunta ou mostra resultado
   function nextQuestion() {
-    currentQuestionIndex++;
-    if(currentQuestionIndex >= questions.length) {
-      showResult();
+    currentQuestion++;
+    if(currentQuestion < questions.length){
+      showQuestion(currentQuestion);
     } else {
-      renderQuestion();
+      showResult();
     }
   }
 
+  // Calcula a idade e data da morte aleatoriamente entre 1 e 15 anos a partir da idade atual
+  function calculateDeathDate(birthDate) {
+    // birthDate no formato dd/mm/aaaa
+    const parts = birthDate.split('/');
+    const day = parseInt(parts[0],10);
+    const month = parseInt(parts[1],10) -1; // mês começa do zero
+    const year = parseInt(parts[2],10);
+    const birth = new Date(year, month, day);
+    const now = new Date();
+
+    let ageNow = now.getFullYear() - birth.getFullYear();
+    if(now.getMonth() < month || (now.getMonth() === month && now.getDate() < day)){
+      ageNow--;
+    }
+    // Morre entre 1 e 15 anos a partir da idade atual
+    const yearsToDeath = Math.floor(Math.random() * 15) + 1;
+    const deathYear = birth.getFullYear() + ageNow + yearsToDeath;
+    const deathDate = new Date(deathYear, month, day);
+
+    return { deathDate, ageAtDeath: ageNow + yearsToDeath };
+  }
+
+  // Gera resultado
   function showResult() {
     screenQuestions.style.display = 'none';
-    screenStart.style.display = 'none';
     screenResult.style.display = 'block';
 
-    // Calcula a data da morte
-    const deathDate = calculateDeathDay(userBirthDate);
-    const deathAge = deathDate.getFullYear() - new Date(userBirthDate).getFullYear();
-
-    // Escolhe causa da morte aleatória
+    // Causa da morte aleatória
     const cause = deathCauses[Math.floor(Math.random() * deathCauses.length)];
+    const { deathDate, ageAtDeath } = calculateDeathDate(userData["Qual sua data de nascimento?"]);
 
-    // Escolhe cidade aleatória
-    const city = cities[Math.floor(Math.random() * cities.length)];
+    // Cidades próximas
+    const cidades = ["Jaguaribe", "Jaguaribara", "Limoeiro", "Itaiçaba", "Aracati", "Morada Nova"];
+    const city = cidades[Math.floor(Math.random() * cidades.length)];
 
-    resultText.innerHTML =
-      `<strong>${userName}</strong>, seu fim acontecerá exatamente assim.<br>` +
-      `Você terá <strong>${cause}</strong>.<br>` +
-      `Data e hora da morte: <strong>${formatDateBR(deathDate)}</strong> às <strong>${String(Math.floor(Math.random()*24)).padStart(2,'0')}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}</strong>.<br>` +
-      `Você morrerá em <strong>${city}</strong>, com <strong>${deathAge} anos</strong> no ano de <strong>${deathDate.getFullYear()}</strong>.`;
+    resultText.innerHTML = `${userData["Qual seu nome?"]}, seu fim acontecerá exatamente assim:<br><br>
+    Você terá <strong>${cause}</strong>.<br>
+    Você morrerá no dia <strong>${deathDate.toLocaleDateString('pt-BR')}</strong> aos <strong>${ageAtDeath}</strong> anos.<br>
+    O local será na cidade de <strong>${city}</strong>.`;
 
-    // Pausa som para foco no resultado (opcional)
-    // audio.pause();
+    // Bloqueio para não repetir nome (sessionStorage)
+    sessionStorage.setItem('visitedName', userData["Qual seu nome?"].toLowerCase());
   }
 
-  startBtn.addEventListener('click', () => {
+  // Verifica se já visitou com o mesmo nome
+  function checkVisitedName() {
+    const visited = sessionStorage.getItem('visitedName');
+    if(visited && visited === userData["Qual seu nome?"].toLowerCase()){
+      alert("Você já consultou com esse nome. Use outro nome para consultar novamente.");
+      location.reload();
+    }
+  }
+
+  // Começa o app
+  document.getElementById('start-btn').addEventListener('click', () => {
     screenStart.style.display = 'none';
     screenQuestions.style.display = 'block';
-    currentQuestionIndex = 0;
-    userResponses = {};
-    userName = '';
-    userBirthDate = null;
-    renderQuestion();
+    showQuestion(0);
   });
 
+  // Monitorar input do nome para checar se já consultou
+  document.addEventListener('click', () => {
+    if(userData["Qual seu nome?"]){
+      checkVisitedName();
+    }
+  });
 })();
 </script>
 </body>
