@@ -43,7 +43,7 @@
   }
 
   main {
-    max-width: 480px;
+    max-width: 520px;
     margin: 80px auto 40px;
     background: rgba(0,0,0,0.75);
     padding: 30px 40px 50px;
@@ -51,6 +51,7 @@
     box-shadow: 0 0 30px 5px #880000cc;
     position: relative;
     z-index: 1;
+    min-height: 450px;
   }
 
   h1 {
@@ -62,43 +63,46 @@
     user-select: none;
   }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
+  .question {
+    margin-bottom: 26px;
+  }
+  .question p {
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+    user-select: none;
   }
 
-  input[type="text"],
-  input[type="tel"] {
+  .btn-group {
+    display: flex;
+    gap: 18px;
+  }
+
+  button, input[type="text"], input[type="tel"] {
+    font-family: 'Cinzel', serif;
     font-size: 1.3rem;
     padding: 14px 18px;
     border-radius: 10px;
     border: none;
     outline: none;
-    background: #111;
-    color: #eee;
+    cursor: pointer;
     box-shadow: 0 0 10px #880000aa inset;
     transition: box-shadow 0.3s ease;
-  }
-  input[type="text"]:focus,
-  input[type="tel"]:focus {
-    box-shadow: 0 0 15px #f44336;
+    color: #eee;
+    background: #111;
   }
 
-  button {
-    font-size: 1.4rem;
-    font-weight: 700;
-    padding: 16px;
-    border-radius: 12px;
-    border: none;
-    background: #f44336;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 0 15px #f44336;
-    transition: background-color 0.3s ease;
+  button:hover:not(:disabled) {
+    box-shadow: 0 0 20px #f44336;
+    background: #330000;
   }
-  button:hover {
-    background: #c63030;
+
+  button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  input[type="text"], input[type="tel"] {
+    width: 100%;
   }
 
   #resultado {
@@ -157,30 +161,64 @@
 
 <main>
   <h1>Descubra seu Dia da Morte</h1>
+
   <form id="formMorte" autocomplete="off" spellcheck="false" novalidate>
-    <input
-      type="text"
-      id="nome"
-      name="nome"
-      placeholder="Seu nome"
-      maxlength="30"
-      autocomplete="off"
-      required
-      pattern="^[a-zA-ZÀ-ú\s]+$"
-      title="Digite apenas letras e espaços"
-    />
-    <input
-      type="tel"
-      id="nascimento"
-      name="nascimento"
-      placeholder="Data de nascimento (dd/mm/aaaa)"
-      maxlength="10"
-      inputmode="numeric"
-      required
-      pattern="^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$"
-      title="Formato: dd/mm/aaaa"
-    />
-    <button type="submit">Descobrir meu dia da morte</button>
+    <div class="question" data-q="1">
+      <p>Você fuma?</p>
+      <div class="btn-group">
+        <button type="button" data-answer="sim">Sim</button>
+        <button type="button" data-answer="nao">Não</button>
+        <button type="button" data-answer="asvezes">Às vezes</button>
+      </div>
+    </div>
+
+    <div class="question" data-q="2" style="display:none;">
+      <p>Você pratica exercícios físicos regularmente?</p>
+      <div class="btn-group">
+        <button type="button" data-answer="sim">Sim</button>
+        <button type="button" data-answer="nao">Não</button>
+        <button type="button" data-answer="asvezes">Às vezes</button>
+      </div>
+    </div>
+
+    <div class="question" data-q="3" style="display:none;">
+      <p>Você tem alguma doença crônica (como diabetes ou pressão alta)?</p>
+      <div class="btn-group">
+        <button type="button" data-answer="sim">Sim</button>
+        <button type="button" data-answer="nao">Não</button>
+        <button type="button" data-answer="asvezes">Às vezes</button>
+      </div>
+    </div>
+
+    <div class="question" data-q="4" style="display:none;">
+      <p>Qual o seu nome?</p>
+      <input type="text" id="nome" name="nome" maxlength="30" placeholder="Digite seu nome" pattern="^[a-zA-ZÀ-ú\s]+$" required />
+    </div>
+
+    <div class="question" data-q="5" style="display:none;">
+      <p>Qual sua data de nascimento?</p>
+      <input type="tel" id="nascimento" name="nascimento" maxlength="10" placeholder="dd/mm/aaaa" pattern="^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$" required inputmode="numeric" />
+    </div>
+
+    <div class="question" data-q="6" style="display:none;">
+      <p>Você costuma se alimentar de forma saudável?</p>
+      <div class="btn-group">
+        <button type="button" data-answer="sim">Sim</button>
+        <button type="button" data-answer="nao">Não</button>
+        <button type="button" data-answer="asvezes">Às vezes</button>
+      </div>
+    </div>
+
+    <div class="question" data-q="7" style="display:none;">
+      <p>Você costuma dormir bem todas as noites?</p>
+      <div class="btn-group">
+        <button type="button" data-answer="sim">Sim</button>
+        <button type="button" data-answer="nao">Não</button>
+        <button type="button" data-answer="asvezes">Às vezes</button>
+      </div>
+    </div>
+
+    <button type="submit" id="btnSubmit" style="display:none; margin-top:30px;">Descubra o dia da sua morte</button>
   </form>
 
   <div id="resultado" style="display:none;"></div>
@@ -189,6 +227,7 @@
 <img id="ceifador" src="https://i.ibb.co/YRBX4xK/reaper-foice.png" alt="Ceifador com Foice" draggable="false" />
 
 <script>
+  // Canvas background animation
   const canvas = document.getElementById('backgroundCanvas');
   const ctx = canvas.getContext('2d');
   let width, height;
@@ -246,6 +285,12 @@
   }
   animate();
 
+  // Form logic
+  const perguntas = document.querySelectorAll('.question');
+  const respostas = {};
+  let currentQ = 0;
+
+  // Controlar entrada do nascimento com máscara dd/mm/aaaa
   const nascimentoInput = document.getElementById('nascimento');
   nascimentoInput.addEventListener('input', e => {
     let v = nascimentoInput.value;
@@ -258,6 +303,44 @@
     nascimentoInput.value = v;
   });
 
+  // Função para mostrar próxima pergunta
+  function mostrarProxima() {
+    if(currentQ < perguntas.length - 1) {
+      currentQ++;
+      perguntas[currentQ].style.display = 'block';
+      if(currentQ === perguntas.length - 1) {
+        document.getElementById('btnSubmit').style.display = 'block';
+      }
+    }
+  }
+
+  // Botões das respostas (Sim, Não, Às vezes)
+  document.querySelectorAll('.btn-group button').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const perguntaDiv = e.target.closest('.question');
+      const qNum = perguntaDiv.getAttribute('data-q');
+      respostas[qNum] = e.target.getAttribute('data-answer');
+      mostrarProxima();
+    });
+  });
+
+  // Inputs texto (nome, nascimento)
+  document.getElementById('nome').addEventListener('input', () => {
+    if(document.getElementById('nome').value.trim().length > 0) {
+      mostrarProxima();
+    }
+  });
+
+  nascimentoInput.addEventListener('input', () => {
+    // Validar formato
+    const val = nascimentoInput.value;
+    const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$/;
+    if(regex.test(val)) {
+      mostrarProxima();
+    }
+  });
+
+  // Cálculo idade atual
   function calcularIdade(dataStr) {
     const [dia, mes, ano] = dataStr.split('/').map(Number);
     const hoje = new Date();
@@ -268,6 +351,7 @@
     return idade;
   }
 
+  // Gerar data da morte
   function gerarDataMorte(dataStr) {
     const idadeAtual = calcularIdade(dataStr);
     const [diaNasc, mesNasc, anoNasc] = dataStr.split('/').map(Number);
@@ -290,6 +374,7 @@
     };
   }
 
+  // Causas reais e comuns
   const causas = [
     "Você terá uma parada cardíaca inesperada.",
     "Você sofrerá um acidente grave ao voltar para casa.",
@@ -303,15 +388,19 @@
     "Você sofrerá um acidente de trânsito fatal."
   ];
 
-  // Aqui armazenamos nomes já usados no localStorage
+  // LocalStorage para nomes usados
   const nomesUsados = JSON.parse(localStorage.getItem('nomesUsados') || '[]');
 
   document.getElementById('formMorte').addEventListener('submit', e => {
     e.preventDefault();
+
     const nome = document.getElementById('nome').value.trim();
     const nascimento = document.getElementById('nascimento').value;
 
-    if(!nome || !nascimento) return alert('Por favor, preencha todos os campos corretamente.');
+    if(!nome || !nascimento) {
+      alert('Preencha seu nome e data de nascimento corretamente.');
+      return;
+    }
 
     if(nomesUsados.includes(nome.toLowerCase())) {
       alert('Esse nome já foi usado! Por favor, use outro nome para ver seu destino.');
@@ -326,12 +415,14 @@
 
     const textoResultado = `${nome}, seu fim acontecerá exatamente assim:\n\n${causa}\n\nData da morte: ${dataMorte.dataFormatada}\nHora exata: ${dataMorte.horaFormatada}\nIdade ao morrer: ${dataMorte.idadeMorte} anos\nAno da morte: ${dataMorte.anoMorte}\nCidade da morte: ${dataMorte.cidade}`;
 
-    const resultadoDiv = document.getElementById('resultado');
-    resultadoDiv.textContent = textoResultado;
-    resultadoDiv.style.display = 'block';
+    document.getElementById('resultado').textContent = textoResultado;
+    document.getElementById('resultado').style.display = 'block';
+
+    // Esconder formulário após resultado
+    document.getElementById('formMorte').style.display = 'none';
   });
 
-  // Áudio suspense confiável
+  // Áudio suspense
   const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/02/15/audio_b95e2eae7e.mp3?filename=dark-suspense-ambient-11291.mp3');
   audio.loop = true;
   audio.volume = 0.18;
@@ -346,11 +437,11 @@
       soundOn = false;
     } else {
       audio.play();
-      soundToggle.innerHTML = '&#128266;'; // som on
-      soundOn = true;
-    }
-  });
+      soundToggle.innerHTML = '&#128
+266;'; // som on
+soundOn = true;
+}
+});
 </script>
 
-</body>
-</html>
+</body> </html> ```
