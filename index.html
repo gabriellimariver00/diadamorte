@@ -1,396 +1,414 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no" />
-<title>Descubra o Dia da Sua Morte</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Playfair+Display&display=swap');
-  /* Reset básico */
-  * {
-    margin: 0; padding: 0; box-sizing: border-box;
-  }
-  body, html {
-    height: 100%;
-    background: #000 url('https://img.freepik.com/fotos-premium/arvore-preta-seca-sem-folhas-com-ceu-vermelho-sangue-assustador-fundo-de-natureza-de-arvore-de-horror-assustador-para-o-halloween_696486-50.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: #eee;
-    font-family: 'Playfair Display', serif;
-    overflow-x: hidden;
-  }
-  /* Overlay preto com transparência para escurecer */
-  body::before {
-    content: "";
-    position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.85);
-    z-index: 0;
-  }
-  #app {
-    position: relative;
-    z-index: 10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .fade-slide {
-    animation: fadeSlideIn 0.6s ease forwards;
-  }
-  @keyframes fadeSlideIn {
-    from {opacity:0; transform: translateX(50px);}
-    to {opacity:1; transform: translateX(0);}
-  }
-  .screen {
-    width: 100%;
-    max-width: 480px;
-    background: rgba(20,20,20,0.75);
-    border-radius: 15px;
-    padding: 25px 30px 40px 30px;
-    box-shadow: 0 0 15px 3px rgba(0,0,0,0.8);
-    user-select: none;
-  }
-  h1, h2 {
-    font-family: 'Unbounded', cursive;
-    margin-bottom: 25px;
-    text-align: center;
-    color: #f0f0f0;
-    text-shadow: 0 0 12px #880000;
-  }
-  p {
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
-  .question-text {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-align: center;
-    text-shadow: 0 0 10px #cc0000;
-  }
-  .btn-group {
-    display: flex;
-    justify-content: space-between;
-  }
-  button {
-    background: linear-gradient(135deg, #7a0000, #b30000);
-    border: none;
-    padding: 14px 22px;
-    border-radius: 12px;
-    color: #f8f8f8;
-    font-weight: 700;
-    font-family: 'Unbounded', cursive;
-    font-size: 1.1rem;
-    cursor: pointer;
-    flex-basis: 30%;
-    box-shadow: 0 0 8px #aa0000;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: linear-gradient(135deg, #b30000, #7a0000);
-  }
-  input[type="text"], input[type="date"] {
-    width: 100%;
-    padding: 14px 15px;
-    font-size: 1.1rem;
-    font-family: 'Playfair Display', serif;
-    border-radius: 10px;
-    border: none;
-    margin-bottom: 25px;
-    box-shadow: inset 0 0 6px #660000;
-    background: rgba(40, 0, 0, 0.8);
-    color: #f0f0f0;
-    text-align: center;
-  }
-  input[type="date"]::-webkit-inner-spin-button,
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-  }
-  input[type="date"]::placeholder {
-    color: #eee;
-  }
-  /* Imagem da morte no topo e resultado */
-  #grim-reaper {
-    width: 110px;
-    margin: 0 auto 30px auto;
-    display: block;
-    filter: drop-shadow(0 0 10px #bb0000);
-  }
-  /* Resultado estilizado */
-  #result-text {
-    font-size: 1.25rem;
-    text-align: center;
-    color: #ffdddd;
-    text-shadow: 0 0 12px #bb0000;
-  }
-  /* Responsividade */
-  @media (max-width: 480px) {
-    .btn-group {
-      flex-direction: column;
-      gap: 15px;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Descubra o Dia da Sua Morte</title>
+
+  <style>
+    /* Reset básico */
+    * {
+      box-sizing: border-box;
     }
-    button {
-      flex-basis: 100%;
-      font-size: 1.3rem;
-      padding: 16px 0;
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      background: black url('https://img.freepik.com/fotos-premium/arvore-preta-seca-sem-folhas-com-ceu-vermelho-sangue-assustador-fundo-de-natureza-de-arvore-de-horror-assustador-para-o-halloween_696486-50.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Georgia', serif;
+      color: white;
+      overflow-x: hidden;
     }
-    #grim-reaper {
-      width: 90px;
+
+    #container {
+      max-width: 480px;
+      margin: 50px auto 60px auto;
+      background: rgba(0,0,0,0.8);
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 25px crimson;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      text-align: center;
       margin-bottom: 25px;
+      text-shadow: 0 0 8px crimson;
+      user-select: none;
     }
-  }
-</style>
+
+    .question {
+      display: none;
+      animation: fadeIn 0.5s ease forwards;
+    }
+    .question.active {
+      display: block;
+    }
+    .question p {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      user-select: none;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+    }
+    .options button {
+      flex: 1;
+      margin: 0 7px;
+      padding: 14px 0;
+      background: #220000;
+      border: 2px solid crimson;
+      border-radius: 9px;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    .options button:hover {
+      background-color: crimson;
+    }
+
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      border: 2px solid crimson;
+      background: black;
+      color: white;
+      user-select: text;
+      box-shadow: 0 0 5px crimson;
+    }
+    input::placeholder {
+      color: #bbb;
+    }
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+
+    #next-btn {
+      margin-top: 24px;
+      background: crimson;
+      border: none;
+      width: 100%;
+      padding: 16px 0;
+      font-weight: 900;
+      font-size: 1.35rem;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+      user-select: none;
+      box-shadow: 0 0 15px crimson;
+      transition: background-color 0.3s ease;
+    }
+    #next-btn:hover {
+      background-color: #cc0011;
+    }
+
+    #result {
+      display: none;
+      text-align: center;
+      user-select: none;
+    }
+    #result img {
+      max-width: 140px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 7px crimson);
+    }
+    #result h2 {
+      font-size: 2rem;
+      margin-bottom: 14px;
+      text-shadow: 0 0 8px crimson;
+    }
+    #result p {
+      font-size: 1.2rem;
+      line-height: 1.4;
+      margin: 0 10px 25px 10px;
+    }
+
+    #sound-control {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: rgba(220,20,60,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 25px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px crimson;
+      z-index: 999;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    #sound-control:hover {
+      background-color: crimson;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+  </style>
 </head>
+
 <body>
-<audio id="ambient-sound" loop autoplay muted playsinline>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_00a3e8f6ef.mp3?filename=dark-fantasy-ambient-12586.mp3" type="audio/mpeg" />
-  Seu navegador não suporta áudio.
-</audio>
-<div id="app" class="fade-slide">
-  <!-- Tela Inicial -->
-  <div id="screen-start" class="screen">
-    <img id="grim-reaper" src="https://segredosdomundo.r7.com/wp-content/uploads/2021/12/10-anjos-da-morte-mais-conhecidos-na-biblia-e-na-mitologia-e1639504697683.jpg" alt="Figura da Morte com foice" />
-    <h1>Descubra o Dia da Sua Morte</h1>
-    <p style="text-align:center; font-size:1.1rem; margin-bottom:25px; color:#ff6666; text-shadow:0 0 8px #ff0000;">
-      Será que você sabe quando vai morrer? Responda as perguntas e descubra seu destino final...
-    </p>
-    <button id="start-btn">Começar</button>
-  </div>
-  <!-- Perguntas -->
-  <div id="screen-questions" class="screen" style="display:none;">
-    <div id="question-container">
-      <p class="question-text" id="question-text"></p>
-      <div class="btn-group" id="answers"></div>
+
+<button id="sound-control" title="Ativar / Desativar som">🔈</button>
+
+<div id="container">
+  <h1>Descubra o Dia da Sua Morte</h1>
+
+  <div id="questions">
+
+    <div class="question active" data-step="1">
+      <p>Você fuma?</p>
+      <div class="options">
+        <button data-value="sim">Sim</button>
+        <button data-value="às vezes">Às vezes</button>
+        <button data-value="não">Não</button>
+      </div>
     </div>
+
+    <div class="question" data-step="2">
+      <p>Você tem pressão alta?</p>
+      <div class="options">
+        <button data-value="sim">Sim</button>
+        <button data-value="às vezes">Às vezes</button>
+        <button data-value="não">Não</button>
+      </div>
+    </div>
+
+    <div class="question" data-step="3">
+      <p>Você tem diabetes?</p>
+      <div class="options">
+        <button data-value="sim">Sim</button>
+        <button data-value="às vezes">Às vezes</button>
+        <button data-value="não">Não</button>
+      </div>
+    </div>
+
+    <div class="question" data-step="4">
+      <p>Você pratica exercícios regularmente?</p>
+      <div class="options">
+        <button data-value="sim">Sim</button>
+        <button data-value="às vezes">Às vezes</button>
+        <button data-value="não">Não</button>
+      </div>
+    </div>
+
+    <div class="question" data-step="5">
+      <p>Você já teve algum problema cardíaco?</p>
+      <div class="options">
+        <button data-value="sim">Sim</button>
+        <button data-value="não">Não</button>
+      </div>
+    </div>
+
+    <div class="question" data-step="6">
+      <p>Qual o seu nome?</p>
+      <input type="text" id="name" placeholder="Digite seu nome aqui" autocomplete="off" />
+    </div>
+
+    <div class="question" data-step="7">
+      <p>Qual a sua data de nascimento?</p>
+      <input type="date" id="birthdate" max="" />
+    </div>
+
   </div>
-  <!-- Resultado -->
-  <div id="screen-result" class="screen" style="display:none;">
-    <img id="grim-reaper-result" src="https://segredosdomundo.r7.com/wp-content/uploads/2021/12/10-anjos-da-morte-mais-conhecidos-na-biblia-e-na-mitologia-e1639504697683.jpg" alt="Figura da Morte com foice" style="width: 130px; display:block; margin: 0 auto 30px auto; filter: drop-shadow(0 0 12px #bb0000);" />
-    <h2>Seu Fim Está Marcado</h2>
-    <p id="result-text"></p>
+
+  <button id="next-btn" style="display:none;">Descubra o dia da sua morte</button>
+
+  <div id="result">
+    <img src="https://segredosdomundo.r7.com/wp-content/uploads/2021/12/10-anjos-da-morte-mais-conhecidos-na-biblia-e-na-mitologia-e1639504697683.jpg" alt="Anjo da Morte" />
+    <h2 id="result-text"></h2>
+    <p id="result-details"></p>
   </div>
 </div>
+
+<audio id="background-audio" loop preload="auto" volume="0.1">
+  <source src="https://drive.google.com/uc?export=download&id=1FYKXRaObgcDAnW6UcmHiVSQGcFWmvymS" type="audio/mpeg" />
+  Seu navegador não suporta áudio embutido.
+</audio>
+
 <script>
-(() => {
-  const audio = document.getElementById('ambient-sound');
-  audio.volume = 0.12; // Volume baixo (12%)
-  audio.muted = false;
-
-  const questions = [
-    {
-      text: "Você fuma?",
-      answers: ["Sim", "Não", "Às vezes"]
-    },
-    {
-      text: "Você pratica exercícios físicos regularmente?",
-      answers: ["Sim", "Não", "Às vezes"]
-    },
-    {
-      text: "Você já teve alguma doença grave (ex: diabetes, pressão alta)?",
-      answers: ["Sim", "Não"]
-    },
-    {
-      text: "Você consome bebidas alcoólicas?",
-      answers: ["Sim", "Não", "Às vezes"]
-    },
-    {
-      text: "Você tem histórico familiar de doenças cardíacas?",
-      answers: ["Sim", "Não"]
-    },
-    {
-      text: "Qual seu nome?",
-      answers: null,
-      inputType: "text",
-      inputId: "nameInput",
-      inputPlaceholder: "Digite seu nome aqui"
-    },
-    {
-      text: "Qual sua data de nascimento?",
-      answers: null,
-      inputType: "text",
-      inputId: "birthDateInput",
-      inputPlaceholder: "Digite sua data de nascimento aqui (dd/mm/aaaa)"
-    }
-  ];
-
-  const deathCauses = [
-    "parada cardíaca inesperada",
-    "acidente de carro fatal",
-    "infarto fulminante",
-    "derrame cerebral",
-    "complicações de uma doença crônica",
-    "queda grave",
-    "insuficiência respiratória",
-    "envenenamento acidental",
-    "ataque de apneia durante o sono"
-  ];
-
-  let currentQuestion = 0;
-  let userData = {};
-  const app = document.getElementById('app');
-  const screenStart = document.getElementById('screen-start');
-  const screenQuestions = document.getElementById('screen-questions');
-  const screenResult = document.getElementById('screen-result');
-  const questionText = document.getElementById('question-text');
-  const answersContainer = document.getElementById('answers');
+  // Elementos
+  const questions = document.querySelectorAll('.question');
+  const nextBtn = document.getElementById('next-btn');
+  const resultSection = document.getElementById('result');
   const resultText = document.getElementById('result-text');
+  const resultDetails = document.getElementById('result-details');
+  const nameInput = document.getElementById('name');
+  const birthdateInput = document.getElementById('birthdate');
+  const soundControl = document.getElementById('sound-control');
+  const audio = document.getElementById('background-audio');
 
-  const grimReaperStart = document.getElementById('grim-reaper');
-  const grimReaperResult = document.getElementById('grim-reaper-result');
+  // Ajusta max da data pra hoje
+  birthdateInput.max = new Date().toISOString().split('T')[0];
 
-  // Função para formatar a data dd/mm/aaaa com barras automáticas
-  function formatDateInput(value) {
-    let v = value.replace(/\D/g, '');
-    if (v.length > 2 && v.length <= 4) v = v.slice(0,2) + '/' + v.slice(2);
-    else if (v.length > 4) v = v.slice(0,2) + '/' + v.slice(2,4) + '/' + v.slice(4,8);
-    return v;
-  }
+  let answers = {};
+  let currentStep = 1;
 
-  // Mostra pergunta atual
-  function showQuestion(index) {
-    const q = questions[index];
-    questionText.textContent = q.text;
-    answersContainer.innerHTML = '';
-    if (q.answers) {
-      q.answers.forEach(ans => {
-        const btn = document.createElement('button');
-        btn.textContent = ans;
-        btn.onclick = () => {
-          userData[q.text] = ans;
-          nextQuestion();
-        };
-        answersContainer.appendChild(btn);
-      });
-      // Espaçamento dos botões: 3 botões -> espaço uniforme, 2 botões -> meio e direita
-      if (q.answers.length === 3) {
-        answersContainer.style.justifyContent = 'space-between';
-      } else {
-        answersContainer.style.justifyContent = 'flex-start';
-        // Ajusta espaçamento se só 2 botões
-        if (answersContainer.children.length === 2) {
-          answersContainer.children[0].style.marginRight = '10px';
-        }
-      }
-    } else if (q.inputType === 'text') {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = q.inputId;
-      input.placeholder = q.inputPlaceholder;
-      input.autocomplete = 'off';
-      if(q.inputId === "birthDateInput"){
-        input.inputMode = "numeric";
-        input.maxLength = 10;
-        input.oninput = e => {
-          e.target.value = formatDateInput(e.target.value);
-        }
-      }
-      answersContainer.appendChild(input);
-      const btnNext = document.createElement('button');
-      btnNext.textContent = "Próximo";
-      btnNext.onclick = () => {
-        const val = document.getElementById(q.inputId).value.trim();
-        if(val.length === 0){
-          alert("Por favor, preencha o campo.");
-          return;
-        }
-        if(q.inputId === "birthDateInput" && !/^\d{2}\/\d{2}\/\d{4}$/.test(val)){
-          alert("Digite a data no formato dd/mm/aaaa.");
-          return;
-        }
-        if(q.inputId === "nameInput" && val.length < 2){
-          alert("Digite um nome válido.");
-          return;
-        }
-        userData[q.text] = val;
-        nextQuestion();
-      };
-      answersContainer.appendChild(btnNext);
-      // Centraliza input e botão
-      input.style.marginBottom = '15px';
-      btnNext.style.width = '100%';
-    }
-  }
+  // Inicializa som pausado e volume baixo
+  audio.volume = 0.1;
+  audio.pause();
 
-  // Próxima pergunta ou mostra resultado
-  function nextQuestion() {
-    currentQuestion++;
-    if(currentQuestion < questions.length){
-      showQuestion(currentQuestion);
+  // Botão de som ligar/desligar
+  soundControl.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      soundControl.textContent = '🔊';
     } else {
-      showResult();
-    }
-  }
-
-  // Calcula a idade e data da morte aleatoriamente entre 1 e 15 anos a partir da idade atual
-  function calculateDeathDate(birthDate) {
-    // birthDate no formato dd/mm/aaaa
-    const parts = birthDate.split('/');
-    const day = parseInt(parts[0],10);
-    const month = parseInt(parts[1],10) -1; // mês começa do zero
-    const year = parseInt(parts[2],10);
-    const birth = new Date(year, month, day);
-    const now = new Date();
-
-    let ageNow = now.getFullYear() - birth.getFullYear();
-    if(now.getMonth() < month || (now.getMonth() === month && now.getDate() < day)){
-      ageNow--;
-    }
-    // Morre entre 1 e 15 anos a partir da idade atual
-    const yearsToDeath = Math.floor(Math.random() * 15) + 1;
-    const deathYear = birth.getFullYear() + ageNow + yearsToDeath;
-    const deathDate = new Date(deathYear, month, day);
-
-    return { deathDate, ageAtDeath: ageNow + yearsToDeath };
-  }
-
-  // Gera resultado
-  function showResult() {
-    screenQuestions.style.display = 'none';
-    screenResult.style.display = 'block';
-
-    // Causa da morte aleatória
-    const cause = deathCauses[Math.floor(Math.random() * deathCauses.length)];
-    const { deathDate, ageAtDeath } = calculateDeathDate(userData["Qual sua data de nascimento?"]);
-
-    // Cidades próximas
-    const cidades = ["Jaguaribe", "Jaguaribara", "Limoeiro", "Itaiçaba", "Aracati", "Morada Nova"];
-    const city = cidades[Math.floor(Math.random() * cidades.length)];
-
-    resultText.innerHTML = `${userData["Qual seu nome?"]}, seu fim acontecerá exatamente assim:<br><br>
-    Você terá <strong>${cause}</strong>.<br>
-    Você morrerá no dia <strong>${deathDate.toLocaleDateString('pt-BR')}</strong> aos <strong>${ageAtDeath}</strong> anos.<br>
-    O local será na cidade de <strong>${city}</strong>.`;
-
-    // Bloqueio para não repetir nome (sessionStorage)
-    sessionStorage.setItem('visitedName', userData["Qual seu nome?"].toLowerCase());
-  }
-
-  // Verifica se já visitou com o mesmo nome
-  function checkVisitedName() {
-    const visited = sessionStorage.getItem('visitedName');
-    if(visited && visited === userData["Qual seu nome?"].toLowerCase()){
-      alert("Você já consultou com esse nome. Use outro nome para consultar novamente.");
-      location.reload();
-    }
-  }
-
-  // Começa o app
-  document.getElementById('start-btn').addEventListener('click', () => {
-    screenStart.style.display = 'none';
-    screenQuestions.style.display = 'block';
-    showQuestion(0);
-  });
-
-  // Monitorar input do nome para checar se já consultou
-  document.addEventListener('click', () => {
-    if(userData["Qual seu nome?"]){
-      checkVisitedName();
+      audio.pause();
+      soundControl.textContent = '🔈';
     }
   });
-})();
+
+  // Mostra a pergunta correta e esconde as outras
+  function showStep(step) {
+    questions.forEach(q => {
+      if (parseInt(q.dataset.step) === step) {
+        q.classList.add('active');
+      } else {
+        q.classList.remove('active');
+      }
+    });
+    // Mostra botão só na última pergunta
+    nextBtn.style.display = (step === questions.length) ? 'block' : 'none';
+  }
+
+  // Inicia mostrando a 1a pergunta
+  showStep(currentStep);
+
+  // Ao clicar nas opções
+  questions.forEach(q => {
+    const buttons = q.querySelectorAll('button');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = parseInt(q.dataset.step);
+        answers[step] = btn.dataset.value;
+        currentStep++;
+        if (currentStep > questions.length) currentStep = questions.length;
+        showStep(currentStep);
+      });
+    });
+  });
+
+  // Mostra botão "Descubra" só nas perguntas com inputs (nome e data)
+  // Além disso, ativa botão somente quando input tiver valor
+  nameInput.addEventListener('input', () => {
+    checkInputsForNextBtn();
+  });
+  birthdateInput.addEventListener('input', () => {
+    checkInputsForNextBtn();
+  });
+
+  function checkInputsForNextBtn() {
+    if(currentStep === questions.length && nameInput.value.trim() !== '' && birthdateInput.value !== '') {
+      nextBtn.disabled = false;
+      nextBtn.style.opacity = '1';
+    } else {
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.6';
+    }
+  }
+
+  // Inicialmente botão desativado
+  nextBtn.disabled = true;
+  nextBtn.style.opacity = '0.6';
+
+  // Botão final: calcular e mostrar resultado
+  nextBtn.addEventListener('click', () => {
+    const nameVal = nameInput.value.trim();
+    const birthVal = birthdateInput.value;
+
+    if (!nameVal) {
+      alert('Por favor, digite seu nome.');
+      return;
+    }
+    if (!birthVal) {
+      alert('Por favor, selecione sua data de nascimento.');
+      return;
+    }
+
+    // Verifica nome usado
+    if(localStorage.getItem('nomeUsado_' + nameVal.toLowerCase())) {
+      alert('Você já consultou com esse nome. Use outro nome para consultar novamente.');
+      return;
+    }
+    localStorage.setItem('nomeUsado_' + nameVal.toLowerCase(), 'true');
+
+    // Calcula idade atual
+    const birthYear = parseInt(birthVal.split('-')[0]);
+    const ageNow = new Date().getFullYear() - birthYear;
+
+    // Defini causas simples baseadas nas respostas
+    let cause = 'parada cardíaca inesperada';
+    if(answers['1'] === 'sim' || answers['2'] === 'sim') cause = 'problemas relacionados ao tabagismo ou pressão alta';
+    else if(answers['3'] === 'sim') cause = 'complicações por diabetes';
+    else if(answers['5'] === 'sim') cause = 'problemas cardíacos crônicos';
+    else if(answers['4'] === 'não') cause = 'falta de atividade física regular';
+
+    // Calcula idade da morte (aleatório 60-90, ajustado)
+    let deathAge = Math.floor(Math.random() * 31) + 60;
+    if(answers['1'] === 'sim') deathAge -= 10;
+    if(answers['2'] === 'sim') deathAge -= 5;
+    if(answers['3'] === 'sim') deathAge -= 7;
+    if(answers['5'] === 'sim') deathAge -= 10;
+    if(answers['4'] === 'sim') deathAge += 5;
+    if(deathAge < ageNow + 1) deathAge = ageNow + 1;
+
+    const deathYear = birthYear + deathAge;
+
+    // Cidades possíveis
+    const cities = ['Jaguaribe', 'Jaguaribara', 'Limoeiro', 'Itaiçaba', 'Aracati', 'Morada Nova'];
+    const city = cities[Math.floor(Math.random() * cities.length)];
+
+    // Hora aleatória
+    const deathHour = Math.floor(Math.random() * 24);
+    const deathMinute = Math.floor(Math.random() * 60);
+
+    // Monta resultado
+    resultText.textContent = `${nameVal}, seu fim acontecerá exatamente assim:`;
+    resultDetails.innerHTML = `
+      Você morrerá aos <strong>${deathAge}</strong> anos, no ano de <strong>${deathYear}</strong>.<br/>
+      A causa provável da morte será <strong>${cause}</strong>.<br/>
+      A data exata será <strong>${deathDay(deathYear)}</strong> às <strong>${pad(deathHour)}:${pad(deathMinute)}</strong>.<br/>
+      Local da morte: <strong>${city}</strong>.
+    `;
+
+    // Esconde perguntas, mostra resultado
+    document.getElementById('questions').style.display = 'none';
+    nextBtn.style.display = 'none';
+    resultSection.style.display = 'block';
+  });
+
+  // Função para gerar data aleatória no ano da morte
+  function deathDay(year) {
+    const start = new Date(year, 0, 1);
+    const end = new Date(year, 11, 31);
+    const diff = end.getTime() - start.getTime();
+    const newDate = new Date(start.getTime() + Math.random() * diff);
+    return newDate.toLocaleDateString('pt-BR');
+  }
+  // Para formatar número com zero à esquerda
+  function pad(n) {
+    return n < 10 ? '0' + n : n;
+  }
 </script>
+
 </body>
 </html>
+
