@@ -8,9 +8,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel&display=swap');
 
-  * {
-    margin: 0; padding: 0; box-sizing: border-box;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body, html {
     height: 100%;
@@ -63,9 +61,7 @@
     user-select: none;
   }
 
-  .question {
-    margin-bottom: 26px;
-  }
+  .question { margin-bottom: 26px; }
   .question p {
     font-size: 1.4rem;
     margin-bottom: 14px;
@@ -197,7 +193,7 @@
 
     <div class="question" data-q="5" style="display:none;">
       <p>Qual sua data de nascimento?</p>
-      <input type="tel" id="nascimento" name="nascimento" maxlength="10" placeholder="dd/mm/aaaa" pattern="^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$" required inputmode="numeric" />
+      <input type="tel" id="nascimento" name="nascimento" maxlength="10" placeholder="dd/mm/aaaa" required inputmode="numeric" />
     </div>
 
     <div class="question" data-q="6" style="display:none;">
@@ -244,9 +240,7 @@
   resize();
 
   class Square {
-    constructor() {
-      this.reset();
-    }
+    constructor() { this.reset(); }
     reset() {
       this.x = Math.random() * width;
       this.y = Math.random() * height;
@@ -258,10 +252,8 @@
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
-
       if(this.x < -this.size) this.x = width + this.size;
       else if(this.x > width + this.size) this.x = -this.size;
-
       if(this.y < -this.size) this.y = height + this.size;
       else if(this.y > height + this.size) this.y = -this.size;
     }
@@ -270,40 +262,27 @@
       ctx.fillRect(this.x, this.y, this.size, this.size);
     }
   }
-
-  for(let i=0; i<numSquares; i++) {
-    squares.push(new Square());
-  }
-
+  for(let i=0; i<numSquares; i++) squares.push(new Square());
   function animate() {
     ctx.clearRect(0,0,width,height);
-    squares.forEach(sq => {
-      sq.update();
-      sq.draw();
-    });
+    squares.forEach(sq => { sq.update(); sq.draw(); });
     requestAnimationFrame(animate);
   }
   animate();
 
-  // Form logic
+  // Perguntas
   const perguntas = document.querySelectorAll('.question');
   const respostas = {};
   let currentQ = 0;
 
-  // Controlar entrada do nascimento com máscara dd/mm/aaaa
   const nascimentoInput = document.getElementById('nascimento');
-  nascimentoInput.addEventListener('input', e => {
-    let v = nascimentoInput.value;
-    v = v.replace(/\D/g, '').slice(0,8);
-    if (v.length >= 5) {
-      v = v.replace(/^(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3');
-    } else if (v.length >= 3) {
-      v = v.replace(/^(\d{2})(\d{0,2}).*/, '$1/$2');
-    }
+  nascimentoInput.addEventListener('input', () => {
+    let v = nascimentoInput.value.replace(/\D/g, '').slice(0,8);
+    if (v.length >= 5) v = v.replace(/^(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3');
+    else if (v.length >= 3) v = v.replace(/^(\d{2})(\d{0,2}).*/, '$1/$2');
     nascimentoInput.value = v;
   });
 
-  // Função para mostrar próxima pergunta
   function mostrarProxima() {
     if(currentQ < perguntas.length - 1) {
       currentQ++;
@@ -314,7 +293,6 @@
     }
   }
 
-  // Botões das respostas (Sim, Não, Às vezes)
   document.querySelectorAll('.btn-group button').forEach(btn => {
     btn.addEventListener('click', e => {
       const perguntaDiv = e.target.closest('.question');
@@ -324,34 +302,22 @@
     });
   });
 
-  // Inputs texto (nome, nascimento)
   document.getElementById('nome').addEventListener('input', () => {
-    if(document.getElementById('nome').value.trim().length > 0) {
-      mostrarProxima();
-    }
+    if(document.getElementById('nome').value.trim().length > 0) mostrarProxima();
   });
-
   nascimentoInput.addEventListener('input', () => {
-    // Validar formato
     const val = nascimentoInput.value;
-    const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$/;
-    if(regex.test(val)) {
-      mostrarProxima();
-    }
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(val)) mostrarProxima();
   });
 
-  // Cálculo idade atual
   function calcularIdade(dataStr) {
     const [dia, mes, ano] = dataStr.split('/').map(Number);
     const hoje = new Date();
     let idade = hoje.getFullYear() - ano;
-    if (hoje.getMonth() + 1 < mes || (hoje.getMonth() + 1 === mes && hoje.getDate() < dia)) {
-      idade--;
-    }
+    if (hoje.getMonth() + 1 < mes || (hoje.getMonth() + 1 === mes && hoje.getDate() < dia)) idade--;
     return idade;
   }
 
-  // Gerar data da morte
   function gerarDataMorte(dataStr) {
     const idadeAtual = calcularIdade(dataStr);
     const [diaNasc, mesNasc, anoNasc] = dataStr.split('/').map(Number);
@@ -361,20 +327,11 @@
     const diaMorte = Math.floor(Math.random() * 28) + 1;
     const horaMorte = Math.floor(Math.random() * 24);
     const minutoMorte = Math.floor(Math.random() * 60);
-
     const cidades = ['Jaguaribe', 'Jaguaribara', 'Limoeiro', 'Itaçaba', 'Aracati', 'Morada Nova'];
     const cidadeSorteada = cidades[Math.floor(Math.random() * cidades.length)];
-
-    return {
-      dataFormatada: `${String(diaMorte).padStart(2,'0')}/${String(mesMorte).padStart(2,'0')}/${anoMorte}`,
-      horaFormatada: `${String(horaMorte).padStart(2,'0')}:${String(minutoMorte).padStart(2,'0')}`,
-      idadeMorte: anosVida,
-      anoMorte,
-      cidade: cidadeSorteada
-    };
+    return { dataFormatada: `${String(diaMorte).padStart(2,'0')}/${String(mesMorte).padStart(2,'0')}/${anoMorte}`, horaFormatada: `${String(horaMorte).padStart(2,'0')}:${String(minutoMorte).padStart(2,'0')}`, idadeMorte: anosVida, anoMorte, cidade: cidadeSorteada };
   }
 
-  // Causas reais e comuns
   const causas = [
     "Você terá uma parada cardíaca inesperada.",
     "Você sofrerá um acidente grave ao voltar para casa.",
@@ -388,60 +345,30 @@
     "Você sofrerá um acidente de trânsito fatal."
   ];
 
-  // LocalStorage para nomes usados
   const nomesUsados = JSON.parse(localStorage.getItem('nomesUsados') || '[]');
-
   document.getElementById('formMorte').addEventListener('submit', e => {
     e.preventDefault();
-
     const nome = document.getElementById('nome').value.trim();
     const nascimento = document.getElementById('nascimento').value;
-
-    if(!nome || !nascimento) {
-      alert('Preencha seu nome e data de nascimento corretamente.');
-      return;
-    }
-
-    if(nomesUsados.includes(nome.toLowerCase())) {
-      alert('Esse nome já foi usado! Por favor, use outro nome para ver seu destino.');
-      return;
-    }
-
+    if(!nome || !nascimento) { alert('Preencha seu nome e data.'); return; }
+    if(nomesUsados.includes(nome.toLowerCase())) { alert('Esse nome já foi usado!'); return; }
     nomesUsados.push(nome.toLowerCase());
     localStorage.setItem('nomesUsados', JSON.stringify(nomesUsados));
-
     const dataMorte = gerarDataMorte(nascimento);
     const causa = causas[Math.floor(Math.random() * causas.length)];
-
-    const textoResultado = `${nome}, seu fim acontecerá exatamente assim:\n\n${causa}\n\nData da morte: ${dataMorte.dataFormatada}\nHora exata: ${dataMorte.horaFormatada}\nIdade ao morrer: ${dataMorte.idadeMorte} anos\nAno da morte: ${dataMorte.anoMorte}\nCidade da morte: ${dataMorte.cidade}`;
-
-    document.getElementById('resultado').textContent = textoResultado;
+    document.getElementById('resultado').textContent = `${nome}, seu fim acontecerá assim:\n\n${causa}\n\nData: ${dataMorte.dataFormatada}\nHora: ${dataMorte.horaFormatada}\nIdade: ${dataMorte.idadeMorte} anos\nAno: ${dataMorte.anoMorte}\nCidade: ${dataMorte.cidade}`;
     document.getElementById('resultado').style.display = 'block';
-
-    // Esconder formulário após resultado
     document.getElementById('formMorte').style.display = 'none';
   });
 
-  // Áudio suspense
   const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/02/15/audio_b95e2eae7e.mp3?filename=dark-suspense-ambient-11291.mp3');
-  audio.loop = true;
-  audio.volume = 0.18;
-
+  audio.loop = true; audio.volume = 0.18;
   const soundToggle = document.getElementById('soundToggle');
   let soundOn = false;
-
   soundToggle.addEventListener('click', () => {
-    if(soundOn){
-      audio.pause();
-      soundToggle.innerHTML = '&#128263;'; // som off
-      soundOn = false;
-    } else {
-      audio.play();
-      soundToggle.innerHTML = '&#128
-266;'; // som on
-soundOn = true;
-}
-});
+    if(soundOn){ audio.pause(); soundToggle.innerHTML = '&#128263;'; soundOn = false; }
+    else { audio.play(); soundToggle.innerHTML = '&#128266;'; soundOn = true; }
+  });
 </script>
-
-</body> </html> ```
+</body>
+</html>
