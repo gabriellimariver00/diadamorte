@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dia da Morte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #f9f9f9;
+      color: #333;
+      text-align: center;
+    }
+    h1 {
+      color: #cc0000;
+    }
+    input, button {
+      padding: 10px;
+      margin: 8px 0;
+      width: 80%;
+      max-width: 300px;
+      font-size: 16px;
+    }
+    button {
+      background: #cc0000;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #resultado {
+      margin-top: 30px;
+      font-size: 18px;
+      line-height: 1.5;
+      background: #fff3f3;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Descubra o dia e hora que você vai morrer</h1>
+  <form id="formMorte">
+    <input type="text" id="nome" placeholder="Seu nome" required /><br />
+    <input type="date" id="nascimento" placeholder="Data de nascimento" required /><br />
+    <button type="submit">Descobrir meu dia da morte</button>
+  </form>
+
+  <div id="resultado" style="display:none;"></div>
+
+  <script>
+    function calcularIdade(dataNasc) {
+      const hoje = new Date();
+      const nasc = new Date(dataNasc);
+      let idade = hoje.getFullYear() - nasc.getFullYear();
+      const m = hoje.getMonth() - nasc.getMonth();
+      if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+        idade--;
+      }
+      return idade;
+    }
+
+    function gerarDataMorte(dataNasc) {
+      const idadeAtual = calcularIdade(dataNasc);
+      const anosVida = idadeAtual + Math.floor(Math.random() * 60) + 1;
+      const nasc = new Date(dataNasc);
+      const anoMorte = nasc.getFullYear() + anosVida;
+      const mesMorte = Math.floor(Math.random() * 12);
+      const diaMorte = Math.floor(Math.random() * 28) + 1;
+      const horaMorte = Math.floor(Math.random() * 24);
+      const minutoMorte = Math.floor(Math.random() * 60);
+      return new Date(anoMorte, mesMorte, diaMorte, horaMorte, minutoMorte);
+    }
+
+    document.getElementById('formMorte').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const nascimento = document.getElementById('nascimento').value;
+      if (!nome || !nascimento) return;
+
+      const dataMorte = gerarDataMorte(nascimento);
+      const opcoesCausas = [
+        "Você terá um acidente de trânsito fatal enquanto volta do trabalho.",
+        "Você terá uma parada cardíaca inesperada.",
+        "Você terá uma doença silenciosa que não perceberá até ser tarde.",
+        "Você sofrerá uma queda grave em casa.",
+        "Você terá um acidente simples no trabalho que será fatal."
+      ];
+      const causa = opcoesCausas[Math.floor(Math.random() * opcoesCausas.length)];
+
+      const textoResultado = `${nome}, seu fim acontecerá exatamente assim:<br><br>${causa}<br><br>Data da morte: <b>${dataMorte.toLocaleDateString('pt-BR')}</b><br>Hora exata: <b>${dataMorte.getHours().toString().padStart(2, '0')}:${dataMorte.getMinutes().toString().padStart(2, '0')}</b>`;
+
+      const resultadoDiv = document.getElementById('resultado');
+      resultadoDiv.innerHTML = textoResultado;
+      resultadoDiv.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
